@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NMIT BIT × p5.js — Code Creatively</title>
+  <meta name="description" content="Interactive p5.js demos from NMIT's Bachelor of Information Technology — see what first-year students learn to build." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">NMIT</div>
+      <div class="brand-text">
+        <div class="brand-title">Bachelor of Information Technology</div>
+        <div class="brand-sub">Code something awesome — powered by <span class="accent">p5.js</span></div>
+      </div>
+    </div>
+    <nav class="scene-tabs" aria-label="Demo selector">
+      <button class="tab is-active" data-scene="particles">Particle Playground</button>
+      <button class="tab" data-scene="flowfield">Flow Field Art</button>
+      <button class="tab" data-scene="game">Catch the Kiwi</button>
+      <button class="tab" data-scene="painter">Rainbow Painter</button>
+    </nav>
+  </header>
+
+  <main class="stage">
+    <section class="canvas-wrap" aria-label="Interactive canvas">
+      <div id="canvas-host"></div>
+      <div class="canvas-hint" id="canvas-hint">Move your mouse or tap to begin</div>
+      <div class="hud" id="hud" aria-live="polite"></div>
+    </section>
+
+    <aside class="info-panel">
+      <div class="info-block">
+        <div class="info-eyebrow">Now playing</div>
+        <h1 class="info-title" id="scene-title">Particle Playground</h1>
+        <p class="info-desc" id="scene-desc">Move your mouse to paint particles into the world. They obey physics, fade with age, and respond to your every move.</p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-eyebrow">What you're learning</div>
+        <ul class="concept-list" id="concept-list"></ul>
+      </div>
+
+      <div class="info-block actions">
+        <button class="btn primary" id="reset-btn">Reset Demo</button>
+        <button class="btn ghost" id="code-btn" aria-expanded="false">View the Code</button>
+      </div>
+
+      <div class="code-panel" id="code-panel" hidden>
+        <div class="code-bar">
+          <span class="code-dot red"></span>
+          <span class="code-dot yellow"></span>
+          <span class="code-dot green"></span>
+          <span class="code-file" id="code-file">particles.js</span>
+        </div>
+        <pre><code id="code-block">// loading...</code></pre>
+      </div>
+
+      <div class="info-footer">
+        <strong>Want to build this?</strong>
+        At NMIT we teach the real tools the NZ tech industry uses — JavaScript, Git, agile delivery, accessibility, and design thinking. <span class="accent">Start with a sketch, ship a product.</span>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="bottombar">
+    <span>NMIT • Te Pukenga • Nelson Marlborough</span>
+    <span class="dot">•</span>
+    <span>Built live with <a href="https://p5js.org/" target="_blank" rel="noopener">p5.js</a></span>
+    <span class="dot">•</span>
+    <span><span id="fps">--</span> fps</span>
+  </footer>
+
+  <script src="js/scenes/particles.js"></script>
+  <script src="js/scenes/flowfield.js"></script>
+  <script src="js/scenes/game.js"></script>
+  <script src="js/scenes/painter.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
