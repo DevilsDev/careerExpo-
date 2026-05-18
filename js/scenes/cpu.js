@@ -298,13 +298,40 @@ window.SceneCPU = (function () {
     if (!selectedId) return;
     const c = COMPONENTS.find(x => x.id === selectedId);
     if (!c) return;
-    const cardW = Math.min(320, p.width * 0.42);
-    const cardH = 90;
-    const cx = 24;
-    const cy = 24;
+    const pos = positions[selectedId];
+    if (!pos) return;
 
+    const cardW = Math.min(280, p.width * 0.34);
+    const cardH = 88;
+    const compR = 56;          // component card half-extent
+    const gap = 12;
+    const safeTop = 50;        // keep clear of HUD chips + hint pill
+    const safeBottom = p.height - 110 - 12;  // keep clear of action bar
+
+    // Default to the right of the component, vertically centred
+    let cx = pos.x + compR + gap;
+    let cy = pos.y - cardH / 2;
+
+    // If it would overflow the right edge, place it to the left instead
+    if (cx + cardW > p.width - 20) {
+      cx = pos.x - compR - gap - cardW;
+    }
+    // Clamp horizontally (final safety)
+    cx = Math.max(20, Math.min(p.width - cardW - 20, cx));
+    // Clamp vertically so it doesn't overlap the HUD chips or the action bar
+    cy = Math.max(safeTop, Math.min(safeBottom - cardH, cy));
+
+    // Soft connector line from component to card edge so the relationship is obvious
+    p.stroke(c.color);
+    p.strokeWeight(1.5);
+    p.drawingContext.setLineDash([3, 4]);
+    const connectorX = cx < pos.x ? cx + cardW : cx;
+    p.line(pos.x, pos.y, connectorX, cy + cardH / 2);
+    p.drawingContext.setLineDash([]);
+
+    // Card background + border
     p.noStroke();
-    p.fill(11, 13, 18, 230);
+    p.fill(11, 13, 18, 240);
     p.rect(cx, cy, cardW, cardH, 12);
     p.stroke(c.color);
     p.strokeWeight(2);
@@ -314,16 +341,16 @@ window.SceneCPU = (function () {
     p.noStroke();
     p.textAlign(p.LEFT, p.TOP);
     p.fill(c.color);
-    p.textSize(11);
-    p.text(c.full.toUpperCase(), cx + 16, cy + 14);
+    p.textSize(10);
+    p.text(c.full.toUpperCase(), cx + 14, cy + 12);
     p.fill(255);
-    p.textSize(18);
+    p.textSize(16);
     p.textStyle(p.BOLD);
-    p.text(`${c.icon}  ${c.label}`, cx + 16, cy + 30);
+    p.text(`${c.icon}  ${c.label}`, cx + 14, cy + 26);
     p.textStyle(p.NORMAL);
     p.fill("#cbd1e0");
-    p.textSize(12);
-    p.text(c.desc, cx + 16, cy + 58, cardW - 32, cardH - 60);
+    p.textSize(11);
+    p.text(c.desc, cx + 14, cy + 50, cardW - 28, cardH - 50);
   }
 
   function reset() {
