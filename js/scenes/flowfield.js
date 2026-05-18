@@ -66,6 +66,12 @@ window.SceneFlowfield = (function () {
       "Generative / algorithmic art",
       "Performance with 1000+ entities"
     ],
+    references: [
+      { label: "p5.js noise() reference", url: "https://p5js.org/reference/#/p5/noise" },
+      { label: "Ken Perlin — original noise paper (1985)", url: "https://mrl.cs.nyu.edu/~perlin/paper445.pdf" },
+      { label: "Daniel Shiffman — Flow Fields (Nature of Code Ch.5)", url: "https://natureofcode.com/autonomous-agents/" },
+      { label: "p5.js noise() tutorial", url: "https://p5js.org/tutorials/noise/" }
+    ],
     file: "flowfield.js",
     code:
 `function draw() {

@@ -15,7 +15,9 @@
     particles: window.SceneParticles,
     flowfield: window.SceneFlowfield,
     game: window.SceneGame,
-    painter: window.ScenePainter
+    painter: window.ScenePainter,
+    cpu: window.SceneCPU,
+    network: window.SceneNetwork
   };
 
   let current = "particles";
@@ -27,6 +29,7 @@
   const titleEl = document.getElementById("scene-title");
   const descEl = document.getElementById("scene-desc");
   const conceptsEl = document.getElementById("concept-list");
+  const refsEl = document.getElementById("ref-list");
   const codeBtn = document.getElementById("code-btn");
   const resetBtn = document.getElementById("reset-btn");
   const codePanel = document.getElementById("code-panel");
@@ -43,6 +46,18 @@
       const li = document.createElement("li");
       li.textContent = c;
       conceptsEl.appendChild(li);
+    }
+    refsEl.innerHTML = "";
+    const refs = scene.references || [];
+    for (const r of refs) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = r.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = r.label;
+      li.appendChild(a);
+      refsEl.appendChild(li);
     }
     codeBlock.textContent = scene.code;
     codeFile.textContent = scene.file;
@@ -73,21 +88,24 @@
   const sketch = (p) => {
     let lastFpsUpdate = 0;
 
-    function fitCanvas() {
+    function dims() {
       const rect = host.getBoundingClientRect();
-      const w = Math.max(320, Math.floor(rect.width));
-      const h = Math.max(360, Math.floor(rect.height));
+      return {
+        w: Math.max(320, Math.floor(rect.width) || 800),
+        h: Math.max(540, Math.floor(rect.height) || 540)
+      };
+    }
+
+    function fitCanvas() {
+      const { w, h } = dims();
       p.resizeCanvas(w, h);
       const scene = SCENES[current];
       if (scene && scene.setup) scene.setup(p, host);
     }
 
     p.setup = function () {
-      const rect = host.getBoundingClientRect();
-      const c = p.createCanvas(
-        Math.max(320, Math.floor(rect.width)),
-        Math.max(420, Math.floor(rect.height || 540))
-      );
+      const { w, h } = dims();
+      const c = p.createCanvas(w, h);
       c.parent(host);
       p.frameRate(60);
       SCENES[current].setup(p, host);
@@ -135,6 +153,10 @@
       codePanel.removeAttribute("hidden");
       codeBtn.setAttribute("aria-expanded", "true");
       codeBtn.textContent = "Hide the Code";
+      // Scroll the revealed code into view inside the side panel
+      requestAnimationFrame(() => {
+        codePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
     } else {
       codePanel.setAttribute("hidden", "");
       codeBtn.setAttribute("aria-expanded", "false");

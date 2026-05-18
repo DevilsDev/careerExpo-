@@ -16,6 +16,13 @@ window.SceneGame = (function () {
   let gameOver = false;
   let highScore = Number(localStorage.getItem("nmit_p5_high") || 0);
 
+  // Bomb-reaction state
+  let sparks = [];        // explosion shrapnel
+  let popups = [];        // floating "-1 ❤️" text
+  let flashAlpha = 0;     // red full-screen flash, fades each frame
+  let shakeFrames = 0;    // screen shake countdown
+  let basketShakeUntil = 0; // frame number when basket stops shaking
+
   function spawn(p) {
     const isBomb = p.random() < 0.12;
     items.push({
@@ -31,7 +38,13 @@ window.SceneGame = (function () {
 
   function drawBasket(p) {
     p.push();
-    p.translate(basketX, p.height - 40);
+    // Wobble basket briefly after a bomb hit
+    let shakeX = 0;
+    if (frameCounter < basketShakeUntil) {
+      const t = basketShakeUntil - frameCounter;
+      shakeX = Math.sin(t * 0.9) * t * 0.4;
+    }
+    p.translate(basketX + shakeX, p.height - 40);
     p.noStroke();
     p.fill("#8b5a2b");
     p.rect(-BASKET_W / 2, 0, BASKET_W, BASKET_H, 6, 6, 14, 14);
@@ -50,17 +63,12 @@ window.SceneGame = (function () {
     p.push();
     p.translate(it.x, it.y);
     p.rotate(it.rot);
+    p.noStroke();
+    p.fill(255);
     p.textAlign(p.CENTER, p.CENTER);
     p.textSize(34);
     p.text(it.kind === "kiwi" ? "🥝" : "💣", 0, 0);
     p.pop();
-  }
-
-  function hit(it) {
-    const top = items[0] ? null : null;
-    const basketTop = -1;
-    const within = it.x > basketX - BASKET_W / 2 && it.x < basketX + BASKET_W / 2;
-    return within && it.y > arguments[1].height - 56 && it.y < arguments[1].height - 10;
   }
 
   function resetGame() {
@@ -70,6 +78,72 @@ window.SceneGame = (function () {
     spawnEvery = 60;
     frameCounter = 0;
     gameOver = false;
+    sparks = [];
+    popups = [];
+    flashAlpha = 0;
+    shakeFrames = 0;
+    basketShakeUntil = 0;
+  }
+
+  // Triggered when the basket catches a bomb — fireworks + flash + popup
+  function explode(p, x, y) {
+    flashAlpha = 180;
+    shakeFrames = 14;
+    basketShakeUntil = frameCounter + 30;
+    // 26 shrapnel sparks spraying in all directions
+    for (let i = 0; i < 26; i++) {
+      const angle = p.random(p.TWO_PI);
+      const speed = p.random(2, 7);
+      sparks.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1,
+        life: 60,
+        col: p.random() < 0.5 ? "#ff3b3b" : (p.random() < 0.5 ? "#ffd166" : "#ff8e72"),
+        size: p.random(3, 7)
+      });
+    }
+    popups.push({ x, y: y - 10, vy: -1.2, life: 70, text: "-1 ❤️" });
+  }
+
+  function drawEffects(p) {
+    // Update + draw shrapnel
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.vy += 0.18;        // gravity
+      s.x += s.vx;
+      s.y += s.vy;
+      s.life--;
+      if (s.life <= 0) { sparks.splice(i, 1); continue; }
+      const c = p.color(s.col);
+      c.setAlpha(p.map(s.life, 0, 60, 0, 255));
+      p.noStroke();
+      p.fill(c);
+      p.circle(s.x, s.y, s.size);
+    }
+
+    // Floating popups
+    for (let i = popups.length - 1; i >= 0; i--) {
+      const pp = popups[i];
+      pp.y += pp.vy;
+      pp.life--;
+      if (pp.life <= 0) { popups.splice(i, 1); continue; }
+      p.noStroke();
+      p.fill(255, 59, 59, p.map(pp.life, 0, 70, 0, 255));
+      p.textAlign(p.CENTER, p.CENTER);
+      p.textSize(22);
+      p.textStyle(p.BOLD);
+      p.text(pp.text, pp.x, pp.y);
+      p.textStyle(p.NORMAL);
+    }
+
+    // Red full-screen flash (fades fast)
+    if (flashAlpha > 0) {
+      p.noStroke();
+      p.fill(255, 59, 59, flashAlpha);
+      p.rect(0, 0, p.width, p.height);
+      flashAlpha = Math.max(0, flashAlpha - 14);
+    }
   }
 
   return {
@@ -80,6 +154,12 @@ window.SceneGame = (function () {
       "Collision detection (AABB)",
       "State machines (playing/over)",
       "localStorage for high scores"
+    ],
+    references: [
+      { label: "MDN — Game development", url: "https://developer.mozilla.org/en-US/docs/Games" },
+      { label: "MDN — 2D collision detection", url: "https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection" },
+      { label: "MDN — Window.localStorage", url: "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" },
+      { label: "p5.js frameRate & frameCount", url: "https://p5js.org/reference/#/p5/frameRate" }
     ],
     file: "game.js",
     code:
@@ -106,6 +186,14 @@ window.SceneGame = (function () {
       resetGame();
     },
     draw(p) {
+      // Screen shake: translate the whole frame by a small random offset
+      p.push();
+      if (shakeFrames > 0) {
+        const mag = shakeFrames * 0.8;
+        p.translate(p.random(-mag, mag), p.random(-mag, mag));
+        shakeFrames--;
+      }
+
       // gradient background
       p.noStroke();
       for (let y = 0; y < p.height; y += 4) {
@@ -149,7 +237,9 @@ window.SceneGame = (function () {
               try { localStorage.setItem("nmit_p5_high", String(highScore)); } catch (e) {}
             }
           } else {
+            // BOOM — bomb hit the basket
             lives--;
+            explode(p, it.x, p.height - 35);
           }
           it.dead = true;
         } else if (it.y > p.height + 30) {
@@ -162,15 +252,13 @@ window.SceneGame = (function () {
 
       drawBasket(p);
 
-      // UI overlay
-      p.noStroke();
-      p.fill(255);
-      p.textAlign(p.LEFT, p.TOP);
-      p.textSize(16);
-      p.text(`Score: ${score}`, 16, 14);
-      p.text(`Lives: ${"❤️".repeat(Math.max(0, lives))}`, 16, 36);
-      p.textAlign(p.RIGHT, p.TOP);
-      p.text(`High: ${highScore}`, p.width - 16, 14);
+      // Bomb sparks, popups, red flash — drawn after game world but inside the shake transform
+      drawEffects(p);
+
+      // End the screen-shake transform — UI overlays below are NOT shaken
+      p.pop();
+
+      // Score / Lives / Best are shown in the HUD chips (top-left); no in-canvas duplicate needed.
 
       if (gameOver) {
         p.fill(0, 180);

@@ -12,7 +12,8 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true">NMIT</div>
+      <!-- Replace with assets/nmit-logo.png when you have the official asset; SVG is the fallback approximation. -->
+      <img class="brand-mark" src="assets/nmit-logo.svg" alt="NMIT" width="84" height="42" />
       <div class="brand-text">
         <div class="brand-title">Bachelor of Information Technology</div>
         <div class="brand-sub">Code something awesome — powered by <span class="accent">p5.js</span></div>
@@ -23,6 +24,8 @@
       <button class="tab" data-scene="flowfield">Flow Field Art</button>
       <button class="tab" data-scene="game">Catch the Kiwi</button>
       <button class="tab" data-scene="painter">Rainbow Painter</button>
+      <button class="tab" data-scene="cpu">Inside Your Computer</button>
+      <button class="tab" data-scene="network">Packet Network</button>
     </nav>
   </header>
 
@@ -40,11 +43,6 @@
         <p class="info-desc" id="scene-desc">Move your mouse to paint particles into the world. They obey physics, fade with age, and respond to your every move.</p>
       </div>
 
-      <div class="info-block">
-        <div class="info-eyebrow">What you're learning</div>
-        <ul class="concept-list" id="concept-list"></ul>
-      </div>
-
       <div class="info-block actions">
         <button class="btn primary" id="reset-btn">Reset Demo</button>
         <button class="btn ghost" id="code-btn" aria-expanded="false">View the Code</button>
@@ -58,6 +56,16 @@
           <span class="code-file" id="code-file">particles.js</span>
         </div>
         <pre><code id="code-block">// loading...</code></pre>
+      </div>
+
+      <div class="info-block">
+        <div class="info-eyebrow">What you're learning</div>
+        <ul class="concept-list" id="concept-list"></ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-eyebrow">Sources &amp; further reading</div>
+        <ul class="ref-list" id="ref-list"></ul>
       </div>
 
       <div class="info-footer">
@@ -79,6 +87,8 @@
   <script src="js/scenes/flowfield.js"></script>
   <script src="js/scenes/game.js"></script>
   <script src="js/scenes/painter.js"></script>
+  <script src="js/scenes/cpu.js"></script>
+  <script src="js/scenes/network.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

@@ -87,6 +87,12 @@ window.ScenePainter = (function () {
       "Saving canvas as PNG (saveCanvas)",
       "Keyboard shortcuts & UI state"
     ],
+    references: [
+      { label: "p5.js saveCanvas() reference", url: "https://p5js.org/reference/#/p5/saveCanvas" },
+      { label: "p5.js color() & colorMode()", url: "https://p5js.org/reference/#/p5/color" },
+      { label: "MDN — HSL colour model", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl" },
+      { label: "MDN — KeyboardEvent.key", url: "https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key" }
+    ],
     file: "painter.js",
     code:
 `function draw() {
