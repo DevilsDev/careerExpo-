@@ -72,6 +72,18 @@
       .join("");
   }
 
+  // Scroll affordance — show "↓ more" cue when the info panel overflows,
+  // hide it once the user has scrolled the panel.
+  function updateScrollHint() {
+    const ip = document.querySelector(".info-panel");
+    if (!ip) return;
+    const overflowing = ip.scrollHeight - ip.clientHeight > 8;
+    ip.classList.toggle("has-overflow", overflowing);
+    ip.classList.toggle("scrolled", ip.scrollTop > 10);
+  }
+  document.querySelector(".info-panel").addEventListener("scroll", updateScrollHint, { passive: true });
+  window.addEventListener("resize", updateScrollHint);
+
   function selectScene(name) {
     if (!SCENES[name]) return;
     current = name;
@@ -81,6 +93,12 @@
     if (p5Instance) {
       // resize-aware re-init of the scene
       scene.setup(p5Instance, host);
+    }
+    // Reset side-panel scroll & re-evaluate the "more below" hint
+    const ip = document.querySelector(".info-panel");
+    if (ip) {
+      ip.scrollTop = 0;
+      requestAnimationFrame(updateScrollHint);
     }
   }
 
@@ -168,4 +186,8 @@
   applyMeta(SCENES[current]);
   p5Instance = new p5(sketch);
   window.__nmitP5 = p5Instance; // handy for tinkering from devtools
+
+  // Initial scroll-affordance evaluation after layout settles
+  requestAnimationFrame(updateScrollHint);
+  requestAnimationFrame(() => requestAnimationFrame(updateScrollHint));
 })();

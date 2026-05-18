@@ -156,17 +156,37 @@ a:hover { text-decoration: underline; }
 
 /* ---------- Info panel ---------- */
 .info-panel {
+  position: relative;       /* anchor for the scroll fade overlay */
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   background: var(--bg-elev);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 16px;
   box-shadow: var(--shadow);
   max-height: calc(100vh - 160px);
   overflow-y: auto;
 }
+/* Fade-out gradient at the bottom of the panel — telegraphs "more below" */
+.info-panel.has-overflow::after {
+  content: "↓ more";
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 -16px -16px;    /* bleed into panel padding */
+  padding: 18px 0 10px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  background: linear-gradient(to bottom, transparent, var(--bg-elev) 60%);
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.info-panel.scrolled::after { opacity: 0; }
 
 .info-block + .info-block { padding-top: 4px; }
 .info-eyebrow {
@@ -175,22 +195,56 @@ a:hover { text-decoration: underline; }
   letter-spacing: 1.2px;
   color: var(--accent-2);
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .info-title {
-  margin: 0 0 8px 0;
-  font-size: 22px;
+  margin: 0 0 6px 0;
+  font-size: 21px;
   line-height: 1.2;
 }
-.info-desc { margin: 0; color: var(--ink-dim); line-height: 1.55; font-size: 14px; }
+.info-desc { margin: 0; color: var(--ink-dim); line-height: 1.5; font-size: 13.5px; }
 
-.concept-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+/* High-impact NMIT call-to-action above the fold */
+.nmit-pitch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(0, 168, 216, 0.12), rgba(52, 209, 191, 0.10));
+  border: 1px solid rgba(0, 168, 216, 0.35);
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+.nmit-pitch:hover {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(0, 168, 216, 0.20), rgba(52, 209, 191, 0.15));
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.nmit-pitch-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink-dim);
+  font-weight: 700;
+}
+.nmit-pitch-cta {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.concept-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .concept-list li {
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: var(--bg-elev-2);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 12.5px;
   color: var(--ink);
   display: flex;
   align-items: center;
@@ -202,11 +256,11 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
 }
 
-.ref-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.ref-list li { font-size: 12.5px; line-height: 1.45; }
+.ref-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.ref-list li { font-size: 12px; line-height: 1.4; }
 .ref-list a {
   display: block;
-  padding: 7px 10px;
+  padding: 5px 10px;
   background: var(--bg-elev-2);
   border: 1px solid var(--line);
   border-radius: 8px;
