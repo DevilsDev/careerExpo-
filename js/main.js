@@ -83,6 +83,14 @@
   }
   document.querySelector(".info-panel").addEventListener("scroll", updateScrollHint, { passive: true });
   window.addEventListener("resize", updateScrollHint);
+  // Click the "↓ more" cue to scroll the panel down by ~80% of its viewport
+  const scrollMore = document.getElementById("scroll-more");
+  if (scrollMore) {
+    scrollMore.addEventListener("click", () => {
+      const ip = document.querySelector(".info-panel");
+      ip.scrollBy({ top: ip.clientHeight * 0.8, behavior: "smooth" });
+    });
+  }
 
   function selectScene(name) {
     if (!SCENES[name]) return;
